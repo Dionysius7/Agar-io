@@ -1,26 +1,68 @@
 var blob;
-var reso_amount = 500;
+var totalReso = 100;
+var spriteSize = 64;
+var resourceSize = 16;
+var enemySize = 32;
 var zoom = 1;
+var lose = false;
+var finished = false;
+var finishedDisplay = "Game Finished!";
+var finishedDisplay = "YOU LOSE!";
+var mapSize = 2;
+var xMapSize;
+var yMapSize;
+var count = 99;
+var blobShifting = true;
+var waktu;
+var login_time;
 
 var resources = [];
 
+var totalEnemy = 5;
+var enemy = [];
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	blob = new Blob(width / 2, height / 2, 64);
 
-	for (let i = 0; i < reso_amount; i++) {
-		let x = random(-width * 2, width * 2);
-		let y = random(-height * 2, height * 2);
-		resources[i] = new Blob(x, y, 16);
+	blob = new Blob(0, 0, spriteSize);
+
+	xMapSize = width * mapSize;
+	yMapSize = height * mapSize;
+	login_time = Date.now();
+
+	for (let i = 0; i < totalReso; i++) {
+		let x = random(- xMapSize, xMapSize);
+		let y = random(- yMapSize, yMapSize);
+		resources[i] = new Blob(x, y, resourceSize);
+	}
+	for (let e = 0; e < totalEnemy; e++) {
+		let x = random(- xMapSize, xMapSize);
+		let y = random(- yMapSize, yMapSize);
+		enemy[e] = new Blob(x, y, enemySize);
 	}
 }
 
 function draw() {
-	background(0);
+	//When game is finished
+	if (finished) {
+		//Rainbow background color
+		++count;
+		if (count > 100) {
+			background(color(random(0, 255), random(0, 255), random(0, 255)));
+			count %= 10;
+		}
+	}
+	else {
+		background(0);
+		waktu = Math.floor((Date.now() - login_time) / 1000);
+	}
+
+
 
 	//Perspective View
 	translate(width / 2, height / 2);
 	let newzoom = 64 / blob.r;
+
 	//Linear interpolated (lerp) to shrink world smoothly
 	zoom = lerp(zoom, newzoom, 0.1);
 	scale(zoom);
@@ -35,4 +77,31 @@ function draw() {
 			resources.splice(i, 1);
 		}
 	}
+
+	//Show Enemy
+	for (let e = 0; e < enemy.length; e++) {
+		enemy[e].showEnemy();
+		if (blob.kill(enemy[e])) {
+			finished = true;
+		}
+	}
+
+	//Display Following Text
+	textSize(blob.r / 3);
+	let score = totalReso - resources.length;
+
+	let display = 'Score : ' + score + ' pts ';
+	let playtime = 'Time : ' + waktu + ' s ';
+
+
+	if (finished) {
+		display = finishedDisplay;
+	}
+	else if (lose) {
+		display = loseDisplay;
+	}
+
+	fill(255);
+	text(display, blob.pos.x - textWidth(display) / 2, blob.pos.y - 4 * blob.r);
+	text(playtime, blob.pos.x - textWidth(playtime) / 2, blob.pos.y - 3.5 * blob.r);
 }
