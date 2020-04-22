@@ -71,7 +71,7 @@ function Blob(x, y, r) {
 	}
 	this.showEnemy = function () {
 		fill(color(255, 0, 0));
-		rect(this.pos.x, this.pos.y, r, r);
+		ellipse(this.pos.x, this.pos.y, r * 2, r * 2);
 	}
 
 	this.show = function () {

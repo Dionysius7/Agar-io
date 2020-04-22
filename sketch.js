@@ -2,12 +2,12 @@ var blob;
 var totalReso = 100;
 var spriteSize = 64;
 var resourceSize = 16;
-var enemySize = 32;
+var enemySize = 48;
 var zoom = 1;
 var lose = false;
 var finished = false;
-var finishedDisplay = "Game Finished!";
-var finishedDisplay = "YOU LOSE!";
+var finishedDisplay = "You WIN!";
+var loseDisplay = "YOU LOSE!";
 var mapSize = 2;
 var xMapSize;
 var yMapSize;
@@ -15,6 +15,7 @@ var count = 99;
 var blobShifting = true;
 var waktu;
 var login_time;
+var sound;
 
 var resources = [];
 
@@ -23,6 +24,8 @@ var enemy = [];
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
+
+	sound = new Audio('raw/sound.mp3');
 
 	blob = new Blob(0, 0, spriteSize);
 
@@ -40,6 +43,9 @@ function setup() {
 		let y = random(- yMapSize, yMapSize);
 		enemy[e] = new Blob(x, y, enemySize);
 	}
+}
+function mouseMoved() {
+	sound.play();
 }
 
 function draw() {
@@ -83,6 +89,7 @@ function draw() {
 		enemy[e].showEnemy();
 		if (blob.kill(enemy[e])) {
 			finished = true;
+			finishedDisplay = loseDisplay;
 		}
 	}
 
@@ -96,9 +103,6 @@ function draw() {
 
 	if (finished) {
 		display = finishedDisplay;
-	}
-	else if (lose) {
-		display = loseDisplay;
 	}
 
 	fill(255);
